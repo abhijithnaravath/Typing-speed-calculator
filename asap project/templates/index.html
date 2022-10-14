@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Typing speed calculator</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Trirong">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+<body>
+
+<div class = "mainDiv">
+    <div class ="centerDiv">
+        <h1>welcome to typing speed calculator</h1>
+        <h3 id="time"> 0 seconds passed</h3>
+        <h2 id="msg">{{text}} </h2>
+        <form method="post" action="/">
+        <textarea id = "my_words" cols="100" rows="10" placeholder="Remember, be nice!"></textarea>
+        <br>
+        </form>
+        <h4 id="response"></h4>
+        <button id = "start" class = "main btn">Start</button>
+        <button id = "submit" class = "main btn">Submit</button>
+        <button id = "reset" class = "reset">Reset</button>
+    </div>
+</div>
+<script>
+var time_taken = 1;
+var k = "";
+init_text = "{{text}}";
+console.log("{{text}}");
+$( document ).ready(()=>{
+<!--    get_text();-->
+
+});
+
+$("#start").click(c => {
+    clearInterval(k);
+    k = setInterval(() => {
+        time_taken++;
+        $("#time").text(time_taken + " seconds passed");
+    }, 1000);
+    console.log("start clicked");
+});
+
+$("#reset").click(c => {
+    $("#my_words").val("");
+    time_taken = 1;
+    $("#time").text("0 seconds passed");
+    clearInterval(k);
+});
+
+$("#submit").click(c => {
+clearInterval(k);
+ typed = $("#my_words").val();
+ console.log(typed, time_taken);
+ submit_data();
+});
+
+function submit_data(){
+typed = $("#my_words").val();
+    $.ajax({
+     url:"/check_text",
+     type: 'POST',
+     data: {
+        text: typed,
+        time_taken: time_taken,
+        init_text: init_text
+
+    }
+ }).done(resp => {
+    console.log(resp);
+    let accu = (resp.non.length / resp.typed_length) * 100;
+    text_1 = "you have accurately typed "+resp.non.length+"/"+resp.typed_length+" letters corresponding given words out of "+resp.checked_length+" letters<br>";
+    text_2 = "you incorrectly typed "+resp.error.length+"/"+resp.typed_length+" letters corresponding given words out of "+resp.checked_length+" letters<br>";
+    text_3 = "wpm = "+resp.wpm.toFixed(2)+", accuracy = "+accu.toFixed(2)+" %, Time taken = "+time_taken+" seconds<br>";
+    $("#response").html(text_1+text_2+text_3);
+ }).fail(e=>console.error(e));
+}
+</script>
+</body>
+</html>
+<style>
+         *{ padding: 0; margin: 0; box sizing: border-box; font-family: "Trirong", serif;}
+          .mainDiv{
+              width: 100%;
+              height: 100vh;
+              position: relative;
+              background: #0EEE59;
+              }
+          .centerDiv{
+               position: absolute;
+               top: 50%;
+               left: 50%;
+               transform: translate(-50%, -50%);
+               text-align: center;
+          }
+
+          h1{ text-transform: capitalize;
+          margin-bottom: 10px ;
+          colour: #FFFF99;
+          text=shadow: 1px 2px 3px #FFFF99;
+          font-size: 2.1rem;}
+
+          h2{ text-align: centre;
+           padding: 10px 20px;
+                border-radius: 20px;
+                margin: 5px;
+                border:5px solid #eb7d34;
+                font-size: 1rem;
+                cursor; pointer;
+                -webkit-transition-property: box-shadow, transform;
+                transition-property: box-shadow, transform;
+                }
+
+          textarea{
+               background-color:#FAF2FF;
+               box-shadow: 0 0 1px rgba(0,0,0,0.2);
+                border-radius: 10px 10px 0 0;
+                border: 20px solid #ADDFAD;
+                color: black;
+                text-size: 1rem;
+                }
+
+          .btn{
+                padding: 10px 20px;
+                border-radius: 20px;
+                margin-right: 60px;
+                border:5px solid #15f4ee;
+                font-size: 1rem;
+                text-transform: uppercase;
+                cursor; pointer;
+                -webkit-transition-property: box-shadow, transform;
+                transition-property: box-shadow, transform;
+                }
+          .btn:hover, .btn:focus, .btn:active{
+           box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+           -webkit-transform: scale(1.1);
+           transform: scale(1.1);
+           }
+
+          .reset{
+                 padding: 10px 20px;
+                border-radius: 20px;
+                border:5px solid #15f4ee;
+                font-size: 1rem;
+                text-transform: uppercase;
+                cursor; pointer;
+                -webkit-transition-property: box-shadow, transform;
+                transition-property: box-shadow, transform;
+                }
+          .reset:hover, .reset:focus, .reset:active{
+           box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+           -webkit-transform: scale(1.1);
+           transform: scale(1.1);
+           }
+
+
+
+    </style>
